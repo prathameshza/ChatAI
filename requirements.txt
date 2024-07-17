@@ -5,3 +5,4 @@ streamlit
 replicate
 langchain
 PyPDF2
+streamlit-authenticator
