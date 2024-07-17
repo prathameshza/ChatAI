@@ -1,25 +1,49 @@
 import streamlit as st
+import streamlit_authenticator as stauth
 
-st.set_page_config(
-    page_title="Hello",
-    page_icon="👋",
+
+import yaml
+from yaml.loader import SafeLoader
+
+with open('./config.yaml') as file:
+    config = yaml.load(file, Loader=SafeLoader)
+
+authenticator = stauth.Authenticate(
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days'],
+    config['pre-authorized']
 )
 
-st.write("# Welcome to ChatAI 👋")
+authenticator.login()
 
-st.sidebar.success("Select a feature above.")
+if st.session_state["authentication_status"]:
+    authenticator.logout()
+    # st.set_page_config(
+    #     page_title="Hello",
+    #     page_icon="👋",
+    # )
 
-st.markdown(
-    """
-    Greetings, future AI enthusiast!
+    st.write("# Welcome to ChatAI 👋")
 
-    ChatAI is a chatbot that can answer your questions about almost anything.
+    st.sidebar.success("Select a feature above.")
 
-    It has amazing capabilities and is currently in development.
+    st.markdown(
+        """
+        Greetings, future AI enthusiast!
 
-    Some of it's capabilities include: Question Answering, Image Generation, Image Summerization, PDF summerization.
+        ChatAI is a chatbot that can answer your questions about almost anything.
 
-    
-    Developed with ❤️ by Prathamesh Zade, Nikhil Sonone, Abhishek Gambhire and Chaitanya Sonawane.
-    """
-)
+        It has amazing capabilities and is currently in development.
+
+        Some of it's capabilities include: Question Answering, Image Generation, Image Summerization, PDF summerization.
+
+        
+        Developed with ❤️ by Prathamesh Zade, Nikhil Sonone, Abhishek Gambhire and Chaitanya Sonawane.
+        """
+    )
+elif st.session_state["authentication_status"] is False:
+    st.error('Username/password is incorrect')
+elif st.session_state["authentication_status"] is None:
+    st.warning('Please enter your username and password')
